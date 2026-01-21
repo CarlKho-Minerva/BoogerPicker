@@ -8,10 +8,10 @@ public class FingerController : MonoBehaviour
     public float curlSpeed = 5f;
 
     // BOUNDARIES: Adjust these numbers to fit your nose tunnel size
-    public float minX = -1.8f;
-    public float maxX = 1.8f;
-    public float minY = -4f; // How far down (out of nose)
-    public float maxY = 3f;  // How deep (into nose)
+    public float minX = -1.0f;
+    public float maxX = 1.0f;
+    public float minY = -3.5f; // How far down (out of nose)
+    public float maxY = -1.14f;  // How deep (into nose)
 
     void Start()
     {
