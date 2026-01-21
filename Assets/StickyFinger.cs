@@ -2,39 +2,56 @@ using UnityEngine;
 
 public class StickyFinger : MonoBehaviour
 {
-    // Variable to remember which booger we are holding
     private Rigidbody heldBooger;
+    private SpringJoint boogerSpring; // To control the bounciness
+    private float defaultDamper = 0.2f; // Floppy mode
+    private float holdingDamper = 10f;  // Gooey/Stable mode
 
     void OnTriggerStay(Collider other)
     {
-        // 1. If we touch a Booger AND hold Click AND we aren't holding anything yet
+        // 1. Grab Logic
         if (other.gameObject.name == "Booger" && Input.GetMouseButton(0) && heldBooger == null)
         {
-            // Connect the finger to the booger
+            // Connect to Finger
             FixedJoint joint = gameObject.AddComponent<FixedJoint>();
             joint.connectedBody = other.GetComponent<Rigidbody>();
 
-            // Remember what we are holding
             heldBooger = other.GetComponent<Rigidbody>();
+            boogerSpring = other.GetComponent<SpringJoint>();
 
-            // Turn OFF gravity while holding (so it doesn't sag)
+            // Turn OFF gravity so it doesn't sag while holding
             heldBooger.useGravity = false;
+
+            // Make it "Thick" so it doesn't jitter
+            if (boogerSpring != null)
+            {
+                boogerSpring.damper = holdingDamper;
+            }
         }
     }
 
     void Update()
     {
-        // 2. If we let go of the mouse
+        // 2. Release Logic
         if (Input.GetMouseButtonUp(0))
         {
-            // Destroy the joint (Drop it)
+            // Destroy the finger connection
             Destroy(GetComponent<FixedJoint>());
 
-            // If we were holding a booger, turn its gravity ON so it falls
             if (heldBooger != null)
             {
+                // Turn gravity ON so it falls
                 heldBooger.useGravity = true;
-                heldBooger = null; // Forget the booger
+
+                // Make it "Loose" again so it snaps or falls naturally
+                if (boogerSpring != null)
+                {
+                    boogerSpring.damper = defaultDamper;
+                }
+
+                // Forget the booger
+                heldBooger = null;
+                boogerSpring = null;
             }
         }
     }
